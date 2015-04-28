@@ -1,0 +1,131 @@
+Malloc
+
+Let's talk about the heap
+	- One big continuous chunk of memory
+	- We chop it up and hand out chunks of memory
+	- We redistribute the freed blocks to make larger freed blocks!
+	
+				The Heap
+	[0|0|0| |                            ]
+	
+	struct mementry
+		1. successor -> points to the next mementry struct
+		2. predecessor -> points to the previous mementry struct
+			The first mementry created predecessor points to NULL 
+		3. isFree -> is it free?
+		4. size -> how large it is
+			initially: end address - begining address - size of mementry struct
+			
+		As you allocate, you build a doublely linked list
+		
+				  size 20
+	[[0|P|0| ]----------------[P|0|1|20]            ]
+			  ^ pointer returned by Malloc
+	  If you free something that isn't this pointer, it wont be able to find the struct at the end and will die
+	  If you write past the size it will over write the struct and die
+		Free tries to traverse the linked list to do stuff. If they are not where they are expected, it dies (like in the situations above)
+	  
+	  Malloc
+		Is the block free?
+		Is the block large enough?
+		Can i chop the block up?
+		
+		malloc is linear time (traverse n blocks)
+		
+		When freeing a block, you want to colless or merge sorrounding free blocks.
+		YOu need the block immediatly before and or after the block we are currently freeing (when merging freed blocks)
+		
+		Doubly linked list lets us free blocks in constant time. 
+		
+		What if we have small chuncks scattered about and we need to malloc somthing that is the sum of the small scattered chuncks. How does this work?
+			... No answer.. yet(?) Next time maybe
+
+
+
+			
+	malloc.h
+		struct MemEntry{
+			struct MemEntry *prev, *succ;
+					int		isFree;
+					int		size;
+		}
+		
+		void * malloc(unsigned int);
+		void myfree(void *);
+		
+	malloc.c
+		#define BLOCKSIZE(1024 * 1024)
+		static char BigBlock(BLOCKSIZE);
+		
+		
+		void * mymalloc(unsigned int size){
+			static int				initialized = 0;
+			static structMemEntry * root;
+			struct MemEntry			*p, *succ;
+			
+			
+			if(!initialized){
+				root = (struct MemEntry *) BigBlock;
+				root->prev = 0;
+				root->succ = 0;
+				root->size = BLOCKSIZE - sizeof(struct MemEntry);
+				root->isFree = 1;
+				initialized = 1;
+			}
+			
+			p = root;
+			do{
+				if(p->size < size)//If too small, skip it
+					p= p->succ;
+				else if(!p->isFree) //If not free, skip it
+					p= p->succ;
+				else if(p->size < (size + sizeof(struct MemEntry))){ //Is it too small to chop up?
+					p->isFree = 0;
+					return (char *)p + sizeof(struct MemEntry); //return the pointer after the MemEntry struct p
+					//return p + 1; //This should also work
+					}
+				else{
+					succ = (struct MemEntry*)((char*)p + sizeof(struct MemEntry) + size); //where am I going to put the next mementry struct. Physically
+					succ -> prev = p;
+					succ->succ = p-> succ;
+					if(p->succ != 0)
+						p->succ->prev = succ;
+					p-> succ = succ;
+					succ->size = p->size - sizeof( struct MemEntry) - size;
+					succ->isFree = 1;
+					p->size = size;
+					p->isFree = 0;
+					return (char*)p + sizeof(struct MemEntry);
+				}
+			}while(p != 0);
+			
+			return 0;
+		}//End myMalloc
+
+		void myFree(void * p){
+			struct MemEntry		*prt, *pred, *succ;
+		
+			ptr = (struct MemEntry*)((char*)p - sizeof(struct MemEntry));
+			if((pred = prt->prev) != 0 && pred->isFree){
+				pred->size += sizef(struct MemEntry) + prt->size;
+				pred->succ = ptr->succ;
+				
+				if(ptr->succ != 0)
+					ptr->succ->prev = pred;
+			}
+			else{
+				ptr->isFree = 1;
+				pred = ptr;
+			}
+			
+			if((succ = ptr->succ) != 0 && succ->isFree){
+				pred->size += sizeof(struct MemEntry) + succ->size;
+				pred->succ = succ->succ;
+				if(succ->succ !=0)
+					succ->succ->prev = pred;
+			}
+		}
+		
+		He calls Andrew Andy! LOLz
+		
+		
