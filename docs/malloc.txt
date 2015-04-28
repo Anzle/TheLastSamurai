@@ -60,7 +60,7 @@ Let's talk about the heap
 		
 		void * mymalloc(unsigned int size){
 			static int				initialized = 0;
-			static structMemEntry * root;
+			static structMemEntry	*root;
 			struct MemEntry			*p, *succ;
 			
 			
