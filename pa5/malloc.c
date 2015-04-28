@@ -12,7 +12,7 @@ static char BigBlock(BLOCKSIZE);
 
 void * mymalloc(unsigned int size){
 	static int				initialized = 0;
-	static structMemEntry	*root = 0, *last = 0;
+	static struct MemEntry	*root = 0, *last = 0;
 	struct MemEntry			*p, *succ;
 	
 	
