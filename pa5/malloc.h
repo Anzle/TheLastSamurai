@@ -5,12 +5,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-//I can't pull
-struct MemEntry{
+
+typedef struct MemEntry{
 	struct MemEntry *prev, *succ;
 	int		isFree;
 	int		size;
-}
+}MemEntry;
 
 void * mymalloc(unsigned int);
 void myfree(void *);
