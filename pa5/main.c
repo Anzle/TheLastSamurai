@@ -21,7 +21,7 @@ main(int argv, char** argc){
       break;
     }
    }
-  //printf("pointer i-1: %d\n", *ptr[i-1]);
+    printf("pointer i-1: %d\n", *ptr[i-1]);
   //printf("The end of the stack is: %d\n", ptrBound());
   
   for(i = j-1;i >-1;i--){

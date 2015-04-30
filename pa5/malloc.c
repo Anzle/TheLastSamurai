@@ -14,7 +14,7 @@
 static char myblock[BLOCKSIZE]; 
 
 
-void * mymalloc(unsigned int size, char* file, int line){
+void * mymalloc(unsigned int size, char* file, int line, char* func){
   //Statics initialized on the first call only
 	static int				initialized = 0;
 	static MemEntry	  *root = 0, *last = 0;
@@ -60,11 +60,9 @@ void * mymalloc(unsigned int size, char* file, int line){
       return (char*)p + sizeof(MemEntry);
 		}
 	}while(p != 0);
-	printf("Out of Space for allocation %s:%d\n", file, line);
-  // sbrk() increments the program's data space by increment bytes.
-  // if it advances to far, then we are out of space. Kill it. 
-  
-   /* //The "Heap" does not grow without this Code
+	printf("Out of Space for allocation %s:%s:%d\n", file, line, func);
+  /*
+    //The "Heap" does not grow without this Code
   if((p = (MemEntry *) sbrk(sizeof(MemEntry) + size)) == (void*)-1)
 		return 0;
     
@@ -90,7 +88,7 @@ void * mymalloc(unsigned int size, char* file, int line){
 	return 0;
 }//End myMalloc
 
-void myfree(void * p, char* file, int line){
+void myfree(void * p, char* file, int line, char* func){
 	MemEntry		*ptr, *pred, *succ;
 
 	ptr = (MemEntry*)((char*)p - sizeof(MemEntry));

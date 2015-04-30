@@ -1,2 +1,22 @@
-Malloc Test Cases:
+Notes:
+  - All references to the "Heap" refer to our static char array
+  - Our heap does not grow dynamically. The Assignment Specifications are written in a way that urge against that. 
+  - In the event of success, our malloc returns the pointer
+  - In the event of failure, our malloc returns 0 AND prints where the call occurred
   
+mymalloc Test Cases:
+  - test1 - Filling/Freeing the heap with integers
+    Input: all the ints the heap can hold
+    Output: "Out of Space for allocation __FILE__:__func__:__LINE__"
+    
+  - test2 - Adding things of different sizes
+    Input: 10 chars, 10 ints
+    Output: 
+    
+  - test3 - Adding chars & ints, removing chars, and adding more ints
+    Input: 20 chars, 20 ints
+    Output: 
+  
+  - test4 - Large Data Structure > 16 to the front, Small Data to the back
+    Input: data struct size 24 x 10, float x10
+    Output: 
