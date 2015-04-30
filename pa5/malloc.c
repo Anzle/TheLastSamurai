@@ -7,12 +7,14 @@
 #include "malloc.h"
 
 /* Project requres a size 5000 block in the array myblock*/
-#define BLOCKSIZE 4000
+#define BLOCKSIZE 5000
+
+
 /* Dynamic memory in static memory! */
 static char myblock[BLOCKSIZE]; 
 
 
-void * mymalloc(unsigned int size){
+void * mymalloc(unsigned int size, char* file, int line){
   //Statics initialized on the first call only
 	static int				initialized = 0;
 	static MemEntry	  *root = 0, *last = 0;
@@ -61,7 +63,6 @@ void * mymalloc(unsigned int size){
 		}
 	}while(p != 0);
 	
-
   // sbrk() increments the program's data space by increment bytes.
   // if it advances to far, then we are out of space. Kill it. 
   if((p = (MemEntry *) sbrk(sizeof(MemEntry) + size)) == (void*)-1)
@@ -89,7 +90,7 @@ void * mymalloc(unsigned int size){
 	return 0;
 }//End myMalloc
 
-void myFree(void * p){
+void myfree(void * p, char* file, int line){
 	MemEntry		*ptr, *pred, *succ;
 
 	ptr = (MemEntry*)((char*)p - sizeof(MemEntry));
@@ -115,6 +116,20 @@ void myFree(void * p){
 
 /*This is a testing function that tells us the end of the current computing space.
 AKA the End of our Stack. Because of this, I might want to remove sbrk from the code above. */
-int ptrBound(){
-  return *(int*)sbrk(0);
+int* ptrBound(){
+  return (int*)sbrk(0);
+}
+
+/*Clear out the memory by filling the myblock array with 0s*/
+void clearMemory(){
+  int   i;
+  for(i=0;i<BLOCKSIZE;i++)
+    myblock[i] = 0;
+}
+
+void printMemory(){
+  int    i;
+  for(i=0;i<BLOCKSIZE;i++)
+    printf("%d", myblock[i]);
+  
 }

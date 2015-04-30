@@ -1,4 +1,4 @@
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <stdio.h>
 #include "malloc.h"
 
@@ -10,20 +10,20 @@ main(int argv, char** argc){
   
   /*  size of MemEntry is 24 bytes. 
   printf("Size of MemEntry %d\n", sizeof(MemEntry)); */
-  
- /*  for(i=0; i< 999; i++){
-    ptr[i] = (int*)mymalloc(sizeof(int));
+   printf("The end of the stack is: %d\n", ptrBound());
+  clearMemory();
+   //printMemory();
+  for(i=0; i< 1000; i++){
+    ptr[i] = (int*)malloc(sizeof(int));
     *ptr[i] = i;
-  } */
+   }
+  printf("pointer i-1: %d\n", *ptr[i-1]);
+  printf("The end of the stack is: %d\n", ptrBound());
   
-  
-  /* printf("Middle: The end of the stack is: %d\n", ptrBound());
-  
-  for(;i < 2000;i++){
-    ptr[i] = (int*)mymalloc(sizeof(int));
-    *ptr[i] = i;
+  for(i = 999;i >-1;i--){
+    free(ptr[i]);
   }
-  printf("End: The end of the stack is: %d\n", ptrBound()); */
+  printf("End: The end of the stack is: %d\n", ptrBound());
   
   return 0;
 }

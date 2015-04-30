@@ -7,7 +7,7 @@ lib.a: malloc.o
 	ar rv lib.a malloc.o
 
 main: main.c lib.a
-	gcc -Wall -g -o test main.c lib.a -lm 
+	gcc -Wall -g -o main main.c lib.a -lm 
 	
 clean:
-	rm lib.a test malloc.o
+	rm lib.a main malloc.o
