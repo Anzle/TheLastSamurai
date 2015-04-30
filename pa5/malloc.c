@@ -36,11 +36,9 @@ void * mymalloc(unsigned int size, char* file, int line){
 			p= p->succ; //If p->succ is 0, we will break out
 		else if(!p->isFree) //If not free, skip it
 			p= p->succ;                                        
-		else if(p->size < (size + sizeof(MemEntry))){ //Memory block to small to chop
-      /**Wouldn't this allow us to write past the end? Or into something else?**/
+		else if(p->size < (size + sizeof(MemEntry))){ 
 			p->isFree = 0;  
 			return (char *)p + sizeof(MemEntry); //return the pointer after the MemEntry struct p
-			//return p + 1; //This should also work
 			}
 		else{//where am I going to put the next mementry struct. I'm also chopping up blocks
 			succ = (MemEntry*)((char*)p + sizeof(MemEntry) + size); 
@@ -62,13 +60,15 @@ void * mymalloc(unsigned int size, char* file, int line){
       return (char*)p + sizeof(MemEntry);
 		}
 	}while(p != 0);
-	
+	printf("Out of Space for allocation %s:%d\n", file, line);
   // sbrk() increments the program's data space by increment bytes.
   // if it advances to far, then we are out of space. Kill it. 
+  
+   /* //The "Heap" does not grow without this Code
   if((p = (MemEntry *) sbrk(sizeof(MemEntry) + size)) == (void*)-1)
 		return 0;
-	
-  else if(last == 0){ //create/init block
+    
+  if(last == 0){ //create/init block
 		p->prev = p->succ = 0;
 		p->size = 0;
 		p->isFree= 0;
@@ -86,7 +86,7 @@ void * mymalloc(unsigned int size, char* file, int line){
 		last = p;
 		return p+1;
 	}
-	
+	*/
 	return 0;
 }//End myMalloc
 
