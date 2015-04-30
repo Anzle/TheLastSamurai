@@ -28,12 +28,14 @@ void*    ptr[1000];
       *temp = 5;
     }
     else{
+	  printf("HERE\n");
       j = i;
       break;
     }
    }
   
-  for(; i< 20; i++){
+  printf("i=%d, j=%d\n", i, j);
+  for(i=10; i< 20; i++){
     if ((ptr[i] = (Large*)malloc(sizeof(Large))) != 0){
       Large* temp = (Large*)ptr[i];
       temp->a = 15;
@@ -42,11 +44,14 @@ void*    ptr[1000];
       temp->d = 15;
     }
     else{
+	  printf("HERE AGAIN\n");
       j = i;
       break;
     }
    }
-    
+  
+  printf("i=%d, j=%d\n", i, j);
+  
   printf("Start of our heap is: %p\n", ptr[0]);
   printf("End of our heap is: %p\n", ptr[0]+5000);
   printf("Allocation stopped at: %p\n", ptr[i-1]);
@@ -59,6 +64,11 @@ void*    ptr[1000];
     free(ptr[i]);
   }
 
+  //check for double free
+  char* p = (char*)malloc(200);
+  free(p);
+  free(p);
+  
   printf("End of Program Reached. \n");
   return 0;
 }

@@ -76,6 +76,10 @@ void myfree(void * p, char* file, int line){
 			ptr->succ->prev = pred;
 	}
 	else{
+		if(ptr->isFree == 1){
+			printf("Error: Memory Already Freed %s:%d\n", file, line);
+			return;
+		}
 		ptr->isFree = 1;
 		pred = ptr;
 	}
