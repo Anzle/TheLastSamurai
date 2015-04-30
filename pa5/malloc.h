@@ -14,5 +14,6 @@ typedef struct MemEntry{
 
 void * mymalloc(unsigned int);
 void myfree(void *);
+int ptrBound();
 
 #endif

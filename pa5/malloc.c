@@ -7,8 +7,9 @@
 #include "malloc.h"
 
 /* Project requres a size 5000 block in the array myblock*/
-#define BLOCKSIZE 5000
-static char myblock(BLOCKSIZE); /* Dynamic memory in static memory! */
+#define BLOCKSIZE 4000
+/* Dynamic memory in static memory! */
+static char myblock[BLOCKSIZE]; 
 
 
 void * mymalloc(unsigned int size){
@@ -89,11 +90,11 @@ void * mymalloc(unsigned int size){
 }//End myMalloc
 
 void myFree(void * p){
-	MemEntry		*prt, *pred, *succ;
+	MemEntry		*ptr, *pred, *succ;
 
 	ptr = (MemEntry*)((char*)p - sizeof(MemEntry));
-	if((pred = prt->prev) != 0 && pred->isFree){
-		pred->size += sizef(MemEntry) + prt->size;
+	if((pred = ptr->prev) != 0 && pred->isFree){
+		pred->size += sizeof(MemEntry) + ptr->size;
 		pred->succ = ptr->succ;
 		
 		if(ptr->succ != 0)
@@ -110,4 +111,10 @@ void myFree(void * p){
 		if(succ->succ !=0)
 			succ->succ->prev = pred;
 	}
+}
+
+/*This is a testing function that tells us the end of the current computing space.
+AKA the End of our Stack. Because of this, I might want to remove sbrk from the code above. */
+int ptrBound(){
+  return *(int*)sbrk(0);
 }
