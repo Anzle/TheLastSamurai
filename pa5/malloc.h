@@ -7,7 +7,7 @@
 #include <string.h>
 
 #define malloc( x ) mymalloc( x, __FILE__, __LINE__, __func__ )
-#define free( x ) myfree( x, __FILE__, __LINE__, __func__ )
+#define free( x ) myfree( x, __FILE__, __LINE__)
 
 typedef struct MemEntry{
 	struct MemEntry *prev, *succ;
@@ -15,11 +15,13 @@ typedef struct MemEntry{
 	int		size;
 }MemEntry;
 
-void * mymalloc(unsigned int, char*, int, char*);
+void * mymalloc(unsigned int, char*, int, const char*);
 void myfree(void *, char*, int);
 
 int* ptrBound();
 void clearMemory();
 void printMemory();
+void * forwardMalloc(unsigned int, char*, int, const char*, MemEntry*);
+void * backwardMalloc(unsigned int, char*, int, const char*, MemEntry*);
 
 #endif
