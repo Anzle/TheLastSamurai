@@ -22,7 +22,7 @@ void myfree(void *, char*, int);
 int* ptrBound();
 void clearMemory();
 void printMemory();
-void * forwardMalloc(unsigned int, char*, int, const char*, MemEntry*);
+void * forwardMalloc(unsigned int size, char* file, int line, const char* func, MemEntry* root, MemEntry* last);
 void * backwardMalloc(unsigned int, char*, int, const char*, MemEntry*);
 
 #endif

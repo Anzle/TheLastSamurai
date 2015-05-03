@@ -37,7 +37,7 @@ void * mymalloc(unsigned int size, char* file, int line, const char* func){
 	if(size <= THRESH)
 		retVal = backwardMalloc(size, file, line, func, last);
 	else
-		retVal = forwardMalloc(size, file, line, func, root);
+		retVal = forwardMalloc(size, file, line, func, root, last);
 	
 	if (retVal)
 		printf("Successfully allocated %ld blocks\n", (size+sizeof(MemEntry)));
@@ -101,9 +101,9 @@ void printMemory(){
   printf("\n");
 }
 
-void remainingSpace(){
+/*void remainingSpace(){
 	if()
-}
+}*/
 
 void * backwardMalloc(unsigned int size, char* file, int line, const char* func, MemEntry* last){
   MemEntry *p, *succ;

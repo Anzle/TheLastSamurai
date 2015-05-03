@@ -35,6 +35,8 @@ main(){
 		ptr64->size[i] = '6';
 	for(i=0;i<10;i++){
 		ptrC[i] = (char*)malloc(sizeof(char));
+		if(!ptrC[i])
+			break;
 		*ptrC[i] = 'C';
 	}
 	
