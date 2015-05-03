@@ -33,8 +33,9 @@ void*    ptr[1000];
       break;
     }
    }
+  j = i;
   
-  printf("i=%d, j=%d\n", i, j);
+  //printf("i=%d, j=%d\n", i, j);
   for(i=10; i< 20; i++){
     if ((ptr[i] = (Large*)malloc(sizeof(Large))) != 0){
       Large* temp = (Large*)ptr[i];
@@ -49,8 +50,8 @@ void*    ptr[1000];
       break;
     }
    }
-  
-  printf("i=%d, j=%d\n", i, j);
+  j = i;
+  //printf("i=%d, j=%d\n", i, j);
   
   printf("Start of our heap is: %p\n", ptr[0]);
   printf("End of our heap is: %p\n", ptr[0]+5000);
@@ -58,7 +59,7 @@ void*    ptr[1000];
   printf("Size of Large: %lu\n", sizeof(Large));
   printf("Size of int: %lu\n", sizeof(int));
   
-  printMemory();
+  //printMemory();
     
   for(i=i-1;i >-1;i--){
     free(ptr[i]);
@@ -68,6 +69,20 @@ void*    ptr[1000];
   char* p = (char*)malloc(200);
   free(p);
   free(p);
+  
+  //check for free of unallocated memory
+  int x;
+  free(&x);
+  
+  //check for free of offset memory
+  char * s = (char *) malloc(581);
+  free(s+10);
+  
+  //regular freeing of memory
+  char * another = (char *) malloc(3647);
+  free(another);
+  another = (char *) malloc(3647);
+  free(another);
   
   printf("End of Program Reached. \n");
   return 0;

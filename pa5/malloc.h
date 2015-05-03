@@ -12,6 +12,7 @@
 typedef struct MemEntry{
 	struct MemEntry *prev, *succ;
 	int		isFree;
+  int		pattern;
 	int		size;
 }MemEntry;
 
@@ -21,7 +22,10 @@ void myfree(void *, char*, int);
 int* ptrBound();
 void clearMemory();
 void printMemory();
-void * forwardMalloc(unsigned int, char*, int, const char*, MemEntry*);
-void * backwardMalloc(unsigned int, char*, int, const char*, MemEntry*);
+int remainingSpace();
+int allocatedSpace();
+
+void * forwardMalloc(unsigned int, char*, int, const char*);
+void * backwardMalloc(unsigned int, char*, int, const char*);
 
 #endif
