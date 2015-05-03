@@ -13,31 +13,32 @@ the threshhold is for when to allocate to teh front or rear of the list*/
 
 /* Dynamic memory in static memory! */
 static char myblock[BLOCKSIZE]; 
-
+static MemEntry	  *__ROOT__ = 0, *__LAST__ = 0;
 
 /*mymalloc only uses a finite amount of space*/
 void * mymalloc(unsigned int size, char* file, int line, const char* func){
   //Statics initialized on the first call only
 	static int				initialized = 0;
-	static MemEntry	  *root = 0, *last = 0;
 	void * retVal;
 	//MemEntry		*p, *succ;
 	
 	
 	if(!initialized){
-		root = (MemEntry *) myblock;
-		root->prev = 0;
-		root->succ = 0;
-		root->size = BLOCKSIZE - sizeof(MemEntry);
-		root->isFree = 1;
+		__ROOT__ = (MemEntry *) myblock;
+		__ROOT__->prev = 0;
+		__ROOT__->succ = 0;
+		__ROOT__->size = BLOCKSIZE - sizeof(MemEntry);
+		__ROOT__->isFree = 1;
 		initialized = 1;
-    last = root; //For reverse allocation
+    __LAST__ = __ROOT__; //For reverse allocation
 	}
 	if(size <= THRESH)
-		retVal = backwardMalloc(size, file, line, func, last);
+		retVal = backwardMalloc(size, file, line, func);
   else
-    retVal = forwardMalloc(size, file, line, func, root);
-	if (retVal)
+    retVal = forwardMalloc(size, file, line, func);
+	
+ // printf("root:last = %p:%p\n", __ROOT__, __LAST__);
+  if (retVal)
 		printf("Successfully allocated %ld blocks\n", (size+sizeof(MemEntry)));
 	return retVal;
   
@@ -92,13 +93,35 @@ void printMemory(){
   
 }
 
-void remainingSpace(){
-	if()
+int remainingSpace(){
+	MemEntry  *ptr = (MemEntry*)myblock;
+  int size = 0;
+  do{
+    if(ptr->isFree)
+      size += ptr->size;
+   // printf(" RemainingSpace\n");
+    ptr = ptr->succ;
+  }while(ptr);
+  return size;
 }
 
-void * backwardMalloc(unsigned int size, char* file, int line, const char* func, MemEntry* last){
+int allocatedSpace(){
+	MemEntry  *ptr = (MemEntry*)myblock;
+  int size = 0;
+  do{
+    if(!ptr->isFree)
+      size += ptr->size;
+   // printf("AllocatedSpace\n");
+    ptr = ptr->succ;
+  }while(ptr);
+  
+  return size;
+}
+
+void * backwardMalloc(unsigned int size, char* file, int line, const char* func){
   MemEntry *p, *succ;
-  p = last;
+  p = __LAST__;
+  //printf("Size of Mementry Data: %d", last->size);
   do{
 		if(p->size < size)//If too small, skip it
 			p= p->prev; 
@@ -129,8 +152,8 @@ void * backwardMalloc(unsigned int size, char* file, int line, const char* func,
 			p->isFree = 1;
 			
       //move last down the list
-      if(last->succ == succ)
-        last = succ;
+      if(__LAST__->succ == succ)
+        __LAST__ = succ;
       
       return (char*)succ + sizeof(MemEntry);
 		}
@@ -139,12 +162,12 @@ void * backwardMalloc(unsigned int size, char* file, int line, const char* func,
   return 0;
 }
 
-void * forwardMalloc(unsigned int size, char* file, int line, const char* func, MemEntry* root, MemEntry* last){
+void * forwardMalloc(unsigned int size, char* file, int line, const char* func){
   MemEntry *p, *succ;
-  p = root;
+  p = __ROOT__;
   do{
 		if(p->size < size)//If too small, skip it
-			p= p->succ; //If p->succ is 0, we will break out
+			p= p->succ; 
 		else if(!p->isFree) //If not free, skip it
 			p= p->succ;                                        
 		else if(p->size < (size + sizeof(MemEntry))){ 
@@ -168,9 +191,11 @@ void * forwardMalloc(unsigned int size, char* file, int line, const char* func, 
 			p->size = size;
 			p->isFree = 0;
 			
-			if(p == last)
-				last = succ;
-					
+      //printf("Address of p:last %p:%p\n", p, __LAST__);
+			if(p == __LAST__){
+				__LAST__ = p->succ;
+      }
+      //printf("Address of p:last %p:%p\n", p, __LAST__);
 			return (char*)p + sizeof(MemEntry);
 		}
 	}while(p != 0);
