@@ -39,8 +39,8 @@ void * mymalloc(unsigned int size, char* file, int line, const char* func){
     retVal = forwardMalloc(size, file, line, func);
 	
  // printf("root:last = %p:%p\n", __ROOT__, __LAST__);
-  if (retVal)
-		printf("Successfully allocated %ld blocks\n", (size+sizeof(MemEntry)));
+  //if (retVal)
+		//printf("Successfully allocated %ld blocks\n", (size+sizeof(MemEntry)));
 	return retVal;
   
   
@@ -54,6 +54,11 @@ void myfree(void * p, char* file, int line){
 		return;
 	}
 	ptr = (MemEntry*)((char*)p - sizeof(MemEntry));
+  
+  //move last if needed
+  if(ptr ==  __LAST__&& ptr->prev)
+    __LAST__ = ptr->prev;
+  
 	if(ptr->pattern != 0x55555555){
 		printf("Error: Memory Not Allocated via malloc() %s:%d\n", file, line);
 		return;
@@ -98,17 +103,12 @@ void printMemory(){
   int    i;
   for(i=0;i<BLOCKSIZE;i++)
     printf("%c", myblock[i]);
+  printf("\n");
   
 }
 
 int remainingSpace(){
-	MemEntry  *ptr = (MemEntry*)myblock;
-  int size = 0;
-  do{
-    if(ptr->isFree)
-      size += ptr->size;
-    ptr = ptr->succ;
-  }while(ptr);
+	int size = BLOCKSIZE - allocatedSpace();
   return size;
 }
 
@@ -116,8 +116,8 @@ int allocatedSpace(){
 	MemEntry  *ptr = (MemEntry*)myblock;
   int size = 0;
   do{
-    if(!ptr->isFree)
-      size += ptr->size;
+    if(!ptr->isFree && ptr->pattern == 0x55555555)
+      size += ptr->size + sizeof(MemEntry);
     ptr = ptr->succ;
   }while(ptr);
   
@@ -165,6 +165,7 @@ void * backwardMalloc(unsigned int size, char* file, int line, const char* func)
       return (char*)succ + sizeof(MemEntry);
 		}
 	}while(p != 0);
+  
   printf("Out of Space for allocation %s:%s:%d\n", file, func, line);
   return 0;
 }
@@ -207,6 +208,7 @@ void * forwardMalloc(unsigned int size, char* file, int line, const char* func){
 			return (char*)p + sizeof(MemEntry);
 		}
 	}while(p != 0);
+  
   printf("Out of Space for allocation %s:%s:%d\n", file,func, line);
   return 0;
 }

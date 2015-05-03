@@ -10,13 +10,37 @@ mymalloc Test Cases:
     Output: "Out of Space for allocation __FILE__:__func__:__LINE__"
     
   - test2 - Adding things of different sizes
-    Input: 10 chars, 10 ints
+    Input: 3 structs above threshhold, 10 chars
     Output: 
     
-  - test3 - Adding chars & ints, removing chars, and adding more ints
-    Input: 20 chars, 20 ints
+  - test3 - Adding things of different sizes in different orders
+    Input: 3 structs above threshhold, 10 chars
     Output: 
   
-  - test4 - Large Data Structure > 16 to the front, Small Data to the back
-    Input: data struct size 24 x 10, float x10
+  - test4 - Add free Add
+    Input: 4 structs above threshhold, 100 chars, 50 ints
     Output: 
+	
+myfree Test Cases:
+  - test1 - Free pointers that were never allocated
+	Input: 
+		int x; 
+		free(&x);
+	Output: "Error: Memory Not Allocated __FILE__:__LINE__"
+  
+  - test2 - Free pointers to dynamic memory that were not returned from malloc()
+	Input: 
+		char* p = (char *) malloc(300);
+		free(p+10);
+	Output: "Error: Memory Not Allocated via malloc() __FILE__:__LINE__"
+	
+  - test3 - Free pointers twice
+	Input:
+		char * p = (char *) malloc(300);
+		free(p);
+		free(p);
+	Output: "Error: Memory Already Freed __FILE__:__LINE__"
+	
+  - test4 - Regular freeing of memory
+	Input: Create dynamic memory with malloc() and then free the memory with free()
+	Output:
