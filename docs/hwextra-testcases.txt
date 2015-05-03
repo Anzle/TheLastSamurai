@@ -20,3 +20,27 @@ mymalloc Test Cases:
   - test4 - Large Data Structure > 16 to the front, Small Data to the back
     Input: data struct size 24 x 10, float x10
     Output: 
+	
+myfree Test Cases:
+  - test1 - Free pointers that were never allocated
+	Input: 
+		int x; 
+		free(&x);
+	Output: "Error: Memory Not Allocated __FILE__:__LINE__"
+  
+  - test2 - Free pointers to dynamic memory that were not returned from malloc()
+	Input: 
+		char* p = (char *) malloc(300);
+		free(p+10);
+	Output: "Error: Memory Not Allocated via malloc() __FILE__:__LINE__"
+	
+  - test3 - Free pointers twice
+	Input:
+		char * p = (char *) malloc(300);
+		free(p);
+		free(p);
+	Output: "Error: Memory Already Freed __FILE__:__LINE__"
+	
+  - test4 - Regular freeing of memory
+	Input: Create dynamic memory with malloc() and then free the memory with free()
+	Output:

@@ -11,6 +11,7 @@
 
 typedef struct MemEntry{
 	struct MemEntry *prev, *succ;
+	int		pattern;
 	int		isFree;
 	int		size;
 }MemEntry;

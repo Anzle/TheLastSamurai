@@ -28,13 +28,14 @@ void * mymalloc(unsigned int size, char* file, int line, const char* func){
 		root->succ = 0;
 		root->size = BLOCKSIZE - sizeof(MemEntry);
 		root->isFree = 1;
+		root->pattern = (int)0x55555555;
 		initialized = 1;
-    last = root; //For reverse allocation
+		last = root; //For reverse allocation
 	}
 	if(size <= THRESH)
-    return backwardMalloc(size, file, line, func, last);
-  else
-    return forwardMalloc(size, file, line, func, root);
+		return backwardMalloc(size, file, line, func, last);
+	else
+		return forwardMalloc(size, file, line, func, root);
   
   
   /*
@@ -66,8 +67,16 @@ void * mymalloc(unsigned int size, char* file, int line, const char* func){
 
 void myfree(void * p, char* file, int line){
 	MemEntry		*ptr, *pred, *succ;
-
+	
+	if(p < myblock || p > myblock + BLOCKSIZE){
+		printf("Error: Memory Not Allocated %s:%d\n", file, line);
+		return;
+	}
 	ptr = (MemEntry*)((char*)p - sizeof(MemEntry));
+	if(ptr->pattern != 0x55555555){
+		printf("Error: Memory Not Allocated via malloc() %s:%d\n", file, line);
+		return;
+	}
 	if((pred = ptr->prev) != 0 && pred->isFree){
 		pred->size += sizeof(MemEntry) + ptr->size;
 		pred->succ = ptr->succ;
@@ -108,8 +117,8 @@ void clearMemory(){
 void printMemory(){
   int    i;
   for(i=0;i<BLOCKSIZE;i++)
-    printf("%c", myblock[i]);
-  
+    printf("%x", myblock[i]);
+  printf("\n");
 }
 
 void * backwardMalloc(unsigned int size, char* file, int line, const char* func, MemEntry* last){
@@ -123,32 +132,30 @@ void * backwardMalloc(unsigned int size, char* file, int line, const char* func,
 		else if(p->size < (size + sizeof(MemEntry))){ 
 			p->isFree = 0;  
 			return (char *)p + sizeof(MemEntry); //return the pointer after the MemEntry struct p
-			}
+		}
 		else{
-			
-      //Create a memory block up the tail of the list
-      
-      succ = (MemEntry*)((char*)p + p->size - (sizeof(MemEntry) + size)); 
-      
-      succ -> prev = p;
+			//Create a memory block up the tail of the list
+			succ = (MemEntry*)((char*)p + p->size - (sizeof(MemEntry) + size)); 
+			succ->pattern = (int)0x55555555;
+			succ -> prev = p;
 			succ->succ = p-> succ;
 			
-      if(p->succ != 0)
+			if(p->succ != 0)
 				p->succ->prev = succ;
-			
-      p-> succ = succ;
-			
-      succ->size = sizeof(MemEntry) + size;
+					
+			p-> succ = succ;
+					
+			succ->size = sizeof(MemEntry) + size;
 			succ->isFree = 0;
-			
-      p->size = p->size - succ->size;
+					
+		    p->size = p->size - succ->size;
 			p->isFree = 1;
-			
-      //move last down the list
-      if(last->succ == succ)
-        last = succ;
-      
-      return (char*)succ + sizeof(MemEntry);
+					
+		    //move last down the list
+		    if(last->succ == succ)
+				last = succ;
+			  
+			return (char*)succ + sizeof(MemEntry);
 		}
 	}while(p != 0);
   printf("Out of Space for allocation %s:%s:%d\n", file, func, line);
@@ -170,21 +177,22 @@ void * forwardMalloc(unsigned int size, char* file, int line, const char* func, 
 		else{//where am I going to put the next mementry struct. I'm also chopping up blocks
 			succ = (MemEntry*)((char*)p + sizeof(MemEntry) + size); 
 			
-      succ -> prev = p;
+			succ->pattern = (int)0x55555555;
+			succ -> prev = p;
 			succ->succ = p-> succ;
 			
-      if(p->succ != 0)
+			if(p->succ != 0)
 				p->succ->prev = succ;
 			
-      p-> succ = succ;
+			p-> succ = succ;
 			
-      succ->size = p->size - sizeof(MemEntry) - size;
+			succ->size = p->size - sizeof(MemEntry) - size;
 			succ->isFree = 1;
 			
-      p->size = size;
+			p->size = size;
 			p->isFree = 0;
 			
-      return (char*)p + sizeof(MemEntry);
+			return (char*)p + sizeof(MemEntry);
 		}
 	}while(p != 0);
   printf("Out of Space for allocation %s:%s:%d\n", file,func, line);
