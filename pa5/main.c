@@ -15,7 +15,7 @@ int
 main(int argv, char** argc){
   
 void*    ptr[1000];
-  int     i, j;
+  int     i = 0, j = 0;
   
   /*  size of MemEntry is 24 bytes. 
   printf("Size of MemEntry %d\n", sizeof(MemEntry)); */
@@ -25,7 +25,7 @@ void*    ptr[1000];
   for(i=0; i< 10; i++){
     if ((ptr[i] = (char*)malloc(sizeof(char))) != 0){
       char* temp = (char*)ptr[i];
-      *temp = 5;
+      *temp = 69;
     }
     else{
 	  printf("HERE\n");
@@ -61,7 +61,7 @@ void*    ptr[1000];
   
   //printMemory();
     
-  for(i = j-1;i >-1;i--){
+  for(i=i-1;i >-1;i--){
     free(ptr[i]);
   }
 
