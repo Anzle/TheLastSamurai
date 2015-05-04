@@ -1,4 +1,4 @@
-all: test1 test2 test3 test4
+all: test1 test2 test3 test4 test5
 
 malloc.o: 
 	gcc -Wall -g -c malloc.c
@@ -17,6 +17,10 @@ test3: test3.c lib.a
   
 test4: test4.c lib.a
 	gcc -Wall -g -o test4 test4.c lib.a -lm  
+  
+test5: test5.c lib.a
+	gcc -Wall -g -o test5 test5.c lib.a -lm  
+
 
 clean:
-	rm lib.a malloc.o test1 test2 test3 test4
+	rm lib.a malloc.o test1 test2 test3 test4 test5

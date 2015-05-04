@@ -13,7 +13,7 @@ typedef struct MemEntry{
 	struct MemEntry *prev, *succ;
 	int		isFree;
   int		pattern;
-	int		size;
+	unsigned int		size;
 }MemEntry;
 
 void * mymalloc(unsigned int, char*, int, const char*);

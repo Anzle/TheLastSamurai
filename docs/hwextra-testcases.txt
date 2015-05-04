@@ -11,15 +11,49 @@ mymalloc Test Cases:
     
   - test2 - Adding things of different sizes
     Input: 3 structs above threshhold, 10 chars
-    Output: 
+    Output: Allocated Space: 0
+            Remaining Space: 5000
+            Allocated Space: 130
+            Remaining Space: 4870
+
     
   - test3 - Adding things of different sizes in different orders
     Input: 3 structs above threshhold, 10 chars
-    Output: 
+    Output: Before Allocation
+            Allocated Space: 0
+            Remaining Space: 5000
+            After Allocation
+            Allocated Space: 130
+            Remaining Space: 4870
+            After Free
+            Allocated Space: 0
+            Remaining Space: 5000
+
   
   - test4 - Add free Add
     Input: 4 structs above threshhold, 100 chars, 50 ints
     Output: 
+            Before Allocation
+            Allocated Space: 0
+            Remaining Space: 5000
+
+            Allocated Space: 24
+            Remaining Space: 5000
+            Allocated Space: 220
+            Remaining Space: 4780
+
+            After Allocation
+            Allocated Space: 220
+            Remaining Space: 4780
+
+            After RE:Allocation
+            Allocated Space: 436
+            Remaining Space: 4564
+
+            After Free
+            Allocated Space: 0
+            Remaining Space: 5000
+
 	
 myfree Test Cases:
   - test1 - Free pointers that were never allocated

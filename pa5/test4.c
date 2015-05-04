@@ -31,48 +31,53 @@ main(){
 
  for(i=0; i<30;i++)
     ptrC[i] = (char*)malloc(sizeof(char));
-printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
+//printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
 
 	ptr32 = (S32*)malloc(sizeof(S32));
 
-printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
+//printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
   
   for(i=30; i<60;i++)
     ptrC[i] = (char*)malloc(sizeof(char));
-printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
+//printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
 
   
 	ptr64 = (S64*)malloc(sizeof(S64));
-printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
+//printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
 
   for(i=60; i<100;i++)
     ptrC[i] = (char*)malloc(sizeof(char));
   
   
-  //printf("Allocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), remainingSpace());
+printf("Allocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), remainingSpace());
 	for(i=0; i<24;i++)
 		ptr24->size[i] = '2';
 	for(i=0; i<32;i++)
 		ptr32->size[i] = '3';
 	for(i=0; i<64;i++)
 		ptr64->size[i] = '6';
-  for(i=0; i<100;i++)
-    *ptrC[i] = 'c';
+ 
+  for(i=0; i<100;i++){
+    if(ptrC[i])
+      *ptrC[i] = 'c';
+  }
 	
   printf("\nAfter Allocation\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), remainingSpace());
   //printMemory();
   free(ptr24);
-  printf("Free prt24");
-  for(i=0;i<50;i++)
-    free(ptrC[i]);
-  printf("Free chars");
+ 
+  for(i=0;i<50;i++){
+    if(ptrC[i])
+      free(ptrC[i]);
+  }
+  
   ptr64_2 = (S64*)malloc(sizeof(S64));
   for(i=0; i<64;i++)
 		ptr64->size[i] = '7';
   
   for(i=0;i<50;i++){
-    ptrI[i] = (int*)malloc(sizeof(int));
-    *ptrI[i] = i;
+    if( (ptrI[i] = (int*)malloc(sizeof(int))) != 0)
+      *ptrI[i] = i;
   }
   printf("\nAfter RE:Allocation\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), remainingSpace());
 	//Did they properly to the front
@@ -81,8 +86,10 @@ printf("\nAllocated Space: %d\nRemaining Space: %d\n", allocatedSpace(), 5000);
 	free(ptr32);
 	free(ptr64);
   free(ptr64_2);
+  
   for(i=50;i<100;i++)
     free(ptrC[i]);
+  
 	for(i=0;i<50;i++)
     free(ptrI[i]);
   

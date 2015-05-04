@@ -9,11 +9,11 @@
 /* Project requres a size 5000 block in the array myblock
 the threshhold is for when to allocate to teh front or rear of the list*/
 #define BLOCKSIZE 5000
-#define THRESH    16
+#define THRESH    20
 
 /* Dynamic memory in static memory! */
 static char myblock[BLOCKSIZE]; 
-static MemEntry	  *__ROOT__ = 0, *__LAST__ = 0;
+static MemEntry	  *__ROOT__ = (MemEntry*)myblock, *__LAST__ = (MemEntry*)myblock;
 
 /*mymalloc only uses a finite amount of space*/
 void * mymalloc(unsigned int size, char* file, int line, const char* func){
@@ -21,7 +21,6 @@ void * mymalloc(unsigned int size, char* file, int line, const char* func){
 	static int				initialized = 0;
 	void * retVal;
 	//MemEntry		*p, *succ;
-	
 	
 	if(!initialized){
 		__ROOT__ = (MemEntry *) myblock;
@@ -33,15 +32,16 @@ void * mymalloc(unsigned int size, char* file, int line, const char* func){
 		initialized = 1;
     __LAST__ = __ROOT__; //For reverse allocation
 	}
-	if(size <= THRESH)
-		retVal = backwardMalloc(size, file, line, func);
-  else
+	//if(size <= THRESH)
+	//	retVal = backwardMalloc(size, file, line, func);
+ // else
     retVal = forwardMalloc(size, file, line, func);
 	
  // printf("root:last = %p:%p\n", __ROOT__, __LAST__);
-  //if (retVal)
-		//printf("Successfully allocated %ld blocks\n", (size+sizeof(MemEntry)));
-	return retVal;
+/*    if (retVal)
+		printf("Successfully allocated %ld blocks\n", (size+sizeof(MemEntry)));
+	 */
+   return retVal;
   
   
 }//End myMalloc
@@ -114,10 +114,10 @@ int remainingSpace(){
 
 int allocatedSpace(){
 	MemEntry  *ptr = (MemEntry*)myblock;
-  int size = 0;
+  unsigned int size = 0;
   do{
-    if(!ptr->isFree && ptr->pattern == 0x55555555)
-      size += ptr->size + sizeof(MemEntry);
+    if(!ptr->isFree)
+      size += ptr->size;
     ptr = ptr->succ;
   }while(ptr);
   
@@ -127,21 +127,21 @@ int allocatedSpace(){
 void * backwardMalloc(unsigned int size, char* file, int line, const char* func){
   MemEntry *p, *succ;
   p = __LAST__;
-  //printf("Size of Mementry Data: %d", last->size);
-  do{
-		if(p->size < size)//If too small, skip it
-			p= p->prev; 
+  
+
+ do{
+    if(p->size < size)//If too small, skip it
+			p = p->prev; 
 		else if(!p->isFree) //If not free, skip it
-			p= p->prev;                                        
+			p = p->prev;                                        
 		else if(p->size < (size + sizeof(MemEntry))){ 
 			p->isFree = 0;  
 			return (char *)p + sizeof(MemEntry); //return the pointer after the MemEntry struct p
 			}
 		else{
-			
       //Create a memory block up the tail of the list
       
-      succ = (MemEntry*)((char*)p + p->size - (sizeof(MemEntry) + size)); 
+      succ = (MemEntry*)((char*)p + (p->size - (sizeof(MemEntry) + size))); 
       
       succ->pattern = (int)0x55555555;
       succ-> prev = p;
@@ -150,21 +150,20 @@ void * backwardMalloc(unsigned int size, char* file, int line, const char* func)
       if(p->succ != 0)
 				p->succ->prev = succ;
 			
-      p-> succ = succ;
+      p->succ = succ;
 			
       succ->size = sizeof(MemEntry) + size;
 			succ->isFree = 0;
 			
       p->size = p->size - succ->size;
 			p->isFree = 1;
-			
-      //move last down the list
-      if(__LAST__->succ == succ)
+
+      if( p == __LAST__)
         __LAST__ = succ;
-      
+    
       return (char*)succ + sizeof(MemEntry);
 		}
-	}while(p != 0);
+	} while(p != 0 && ((char*)p > myblock || (char*)p < myblock + BLOCKSIZE));
   
   printf("Out of Space for allocation %s:%s:%d\n", file, func, line);
   return 0;
